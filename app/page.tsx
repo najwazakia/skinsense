@@ -1,65 +1,98 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useRouter } from 'next/navigation';
+import { useDetection } from '@/hooks/useDetection';
+import UploadZone from '@/components/detection/UploadZone';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { Scan, ArrowRight, AlertCircle } from 'lucide-react';
+
+export default function HomePage() {
+  const router = useRouter();
+  const {
+    isUploading,
+    isDetecting,
+    isLoadingRecommendation,
+    detectionResult,
+    recommendation,
+    error,
+    previewUrl,
+    detectImage,
+    reset,
+  } = useDetection();
+
+  const isLoading = isUploading || isDetecting || isLoadingRecommendation;
+
+  const loadingLabel = isUploading
+    ? 'Mengupload gambar...'
+    : isDetecting
+    ? 'Menganalisis kondisi kulit...'
+    : 'Mengambil rekomendasi AI...';
+
+  // Jika deteksi selesai, simpan ke sessionStorage & redirect
+  if (detectionResult && recommendation) {
+    sessionStorage.setItem('detectionResult', JSON.stringify(detectionResult));
+    sessionStorage.setItem('recommendation', JSON.stringify(recommendation));
+    sessionStorage.setItem('previewUrl', previewUrl || '');
+    router.push('/result');
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="max-w-2xl mx-auto px-4 py-12 space-y-8">
+      {/* Hero */}
+      <div className="text-center space-y-3">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
+          <Scan className="w-4 h-4" />
+          Deteksi Penyakit Kulit
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+        <h1 className="font-zain text-4xl md:text-5xl font-extrabold text-stone-800 leading-tight">
+          Kenali Kondisi <span className="text-green-600">Kulitmu</span>
+        </h1>
+        <p className="text-stone-500 max-w-md mx-auto leading-relaxed">
+          Upload foto kondisi kulit kamu, dan biarkan AI kami menganalisis serta memberikan rekomendasi penanganan yang tepat.
+        </p>
+      </div>
+
+      {/* Upload */}
+      <UploadZone
+        onFileSelect={detectImage}
+        previewUrl={previewUrl}
+        onReset={reset}
+        isLoading={isLoading}
+      />
+
+      {/* Loading */}
+      {isLoading && <LoadingSpinner label={loadingLabel} />}
+
+      {/* Error */}
+      {error && (
+        <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-100 rounded-xl text-red-700">
+          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-sm">Terjadi Kesalahan</p>
+            <p className="text-sm mt-0.5">{error}</p>
+          </div>
         </div>
-      </main>
+      )}
+
+      {/* Tips */}
+      {!previewUrl && !isLoading && (
+        <div className="bg-green-50 rounded-2xl p-5 border border-green-100 space-y-2">
+          <p className="font-zain font-bold text-green-800">Tips untuk hasil terbaik:</p>
+          <ul className="text-sm text-green-700 space-y-1.5">
+            {[
+              'Pastikan foto jernih dan terang',
+              'Fokuskan kamera pada area yang ingin dideteksi',
+              'Gunakan cahaya alami jika memungkinkan',
+              'Hindari bayangan yang menutupi area kulit',
+            ].map((tip, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <ArrowRight className="w-3.5 h-3.5 mt-0.5 text-green-500 shrink-0" />
+                {tip}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

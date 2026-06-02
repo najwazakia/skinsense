@@ -1,0 +1,66 @@
+import Image from 'next/image';
+import Link from 'next/link';
+import { Heart, Mail, Shield } from 'lucide-react';
+
+export default function Footer() {
+  return (
+    <footer className="bg-green-900 text-green-100 mt-auto">
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-green-800">
+
+          {/* Brand */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Image src="/skinsense.png" alt="SkinSense" width={28} height={28} className="rounded" />
+              <span className="font-zain text-xl font-extrabold text-white">SkinSense</span>
+            </div>
+            <p className="text-sm text-green-300 leading-relaxed">
+              Platform deteksi penyakit kulit berbasis AI yang membantu kamu mengenali kondisi
+              kulit dan memberikan rekomendasi penanganan yang tepat.
+            </p>
+          </div>
+
+          {/* Links */}
+          <div>
+            <h4 className="font-zain font-bold text-white mb-3">Navigasi</h4>
+            <ul className="space-y-2 text-sm">
+              {[
+                { href: '/',       label: 'Deteksi Kulit' },
+                { href: '/result', label: 'Hasil Deteksi' },
+                { href: '/forum',  label: 'Forum Diskusi' },
+              ].map(({ href, label }) => (
+                <li key={href}>
+                  <Link href={href} className="text-green-300 hover:text-white transition-colors">
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Info */}
+          <div>
+            <h4 className="font-zain font-bold text-white mb-3">Informasi</h4>
+            <ul className="space-y-2 text-sm text-green-300">
+              <li className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-green-500 shrink-0" />
+                Hasil deteksi bukan pengganti diagnosis dokter
+              </li>
+              <li className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-green-500 shrink-0" />
+                support@skinsense.id
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-green-400">
+          <p>© {new Date().getFullYear()} SkinSense. Semua hak dilindungi.</p>
+          <p className="flex items-center gap-1">
+            Dibuat dengan <Heart className="w-3.5 h-3.5 text-green-500" /> untuk kesehatan kulit kamu
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
