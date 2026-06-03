@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Pencil, Trash2, Check, X, User } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
+import { parseFirestoreDate } from '@/lib/date';
 import { updateComment, deleteComment } from '@/lib/api';
 import type { Comment } from '@/types';
 
@@ -42,7 +43,7 @@ export default function CommentItem({ postId, comment, onRefresh }: Props) {
         {comment.author.photo_URL ? (
           <Image
             src={comment.author.photo_URL}
-            alt={comment.author.name}
+            alt={comment.author.name ?? 'User'}
             width={36}
             height={36}
             className="rounded-full border border-green-100"
@@ -59,7 +60,12 @@ export default function CommentItem({ postId, comment, onRefresh }: Props) {
           <div className="flex items-center gap-2">
             <span className="text-sm font-semibold text-stone-700">{comment.author.name}</span>
             <span className="text-xs text-stone-400">
-              {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true, locale: localeId })}
+              {(() => {
+                const parsedDate = parseFirestoreDate(comment.createdAt);
+                return parsedDate
+                  ? formatDistanceToNow(parsedDate, { addSuffix: true, locale: localeId })
+                  : 'Beberapa saat yang lalu';
+              })()}
             </span>
           </div>
           {comment.is_author && !isEditing && (

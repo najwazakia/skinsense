@@ -1,9 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { MessageCircle, ThumbsUp, ThumbsDown, Tag } from 'lucide-react';
+import { MessageCircle, ThumbsUp, Tag } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
+import { safeFormatDistance } from '@/lib/date';
 import type { Post } from '@/types';
 
 interface Props {
@@ -12,6 +13,12 @@ interface Props {
 
 export default function PostCard({ post }: Props) {
   const netVote = post.upvoteCount - post.downvoteCount;
+
+  const timeAgo = safeFormatDistance(
+    post.createdAt,
+    (d) => formatDistanceToNow(d, { addSuffix: true, locale: localeId }),
+    'baru saja'
+  );
 
   return (
     <Link href={`/forum/${post.id}`}>
@@ -37,7 +44,9 @@ export default function PostCard({ post }: Props) {
         </h3>
 
         {/* Content preview */}
-        <p className="text-sm text-stone-500 line-clamp-2 leading-relaxed">{post.content}</p>
+        <p className="text-sm text-stone-500 line-clamp-2 leading-relaxed">
+          {post.content}
+        </p>
 
         {/* Footer */}
         <div className="flex items-center gap-4 text-sm text-stone-400 pt-1">
@@ -51,9 +60,7 @@ export default function PostCard({ post }: Props) {
             <MessageCircle className="w-3.5 h-3.5" />
             {post.commentsCount}
           </span>
-          <span className="ml-auto text-xs">
-            {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: localeId })}
-          </span>
+          <span className="ml-auto text-xs">{timeAgo}</span>
         </div>
       </article>
     </Link>

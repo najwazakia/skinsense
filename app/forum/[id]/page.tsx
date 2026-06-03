@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
+import { parseFirestoreDate } from '@/lib/date';
 import { getPostById, votePost, deletePost } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import CommentList from '@/components/forum/CommentList';
@@ -96,7 +97,7 @@ export default function PostDetailPage() {
               {post.author.photo_URL ? (
                 <Image
                   src={post.author.photo_URL}
-                  alt={post.author.name}
+                  alt={post.author.name ?? 'User'}
                   width={36}
                   height={36}
                   className="rounded-full border border-green-100"
@@ -109,7 +110,12 @@ export default function PostDetailPage() {
               <div>
                 <p className="text-sm font-semibold text-stone-700">{post.author.name}</p>
                 <p className="text-xs text-stone-400">
-                  {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true, locale: localeId })}
+                  {(() => {
+                    const parsedDate = parseFirestoreDate(post.createdAt);
+                    return parsedDate
+                      ? formatDistanceToNow(parsedDate, { addSuffix: true, locale: localeId })
+                      : 'Beberapa saat yang lalu';
+                  })()}
                 </p>
               </div>
             </div>

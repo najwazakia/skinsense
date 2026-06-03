@@ -33,7 +33,7 @@ export default function DetectionResult({ result }: Props) {
 
         <div className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold ${confidenceColor}`}>
           <TrendingUp className="w-4 h-4" />
-          <span className="text-2xl font-zain">{result.confidence.toFixed(1)}%</span>
+          <span className="text-2xl font-zain">{result.confidence}%</span>
         </div>
       </div>
 
@@ -41,7 +41,7 @@ export default function DetectionResult({ result }: Props) {
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-stone-400">
           <span>Tingkat Kepercayaan</span>
-          <span>{result.confidence.toFixed(1)}%</span>
+          <span>{result.confidence}%</span>
         </div>
         <div className="w-full bg-stone-100 rounded-full h-2">
           <div
