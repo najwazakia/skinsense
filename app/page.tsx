@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDetection } from '@/hooks/useDetection';
 import UploadZone from '@/components/detection/UploadZone';
@@ -25,16 +26,20 @@ export default function HomePage() {
   const loadingLabel = isUploading
     ? 'Mengupload gambar...'
     : isDetecting
-    ? 'Menganalisis kondisi kulit...'
-    : 'Mengambil rekomendasi AI...';
+      ? 'Menganalisis kondisi kulit...'
+      : 'Mengambil rekomendasi AI...';
 
-  // Jika deteksi selesai, simpan ke sessionStorage & redirect
-  if (detectionResult && recommendation) {
-    sessionStorage.setItem('detectionResult', JSON.stringify(detectionResult));
-    sessionStorage.setItem('recommendation', JSON.stringify(recommendation));
-    sessionStorage.setItem('previewUrl', previewUrl || '');
-    router.push('/result');
-  }
+  useEffect(() => {
+    if (detectionResult && recommendation) {
+      sessionStorage.setItem('detectionResult', JSON.stringify(detectionResult));
+      sessionStorage.setItem('recommendation', JSON.stringify(recommendation));
+      // Simpan Cloudinary URL (bukan blob) agar tetap valid setelah navigasi/refresh
+      sessionStorage.setItem('resultImageUrl', detectionResult.image_URL || '');
+      // Tetap simpan blob untuk preview sementara jika tersedia
+      sessionStorage.setItem('previewUrl', previewUrl || '');
+      router.push('/result');
+    }
+  }, [detectionResult, recommendation, previewUrl, router]);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12 space-y-8">

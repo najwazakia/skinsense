@@ -3,18 +3,25 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogIn, LogOut, Loader2, User } from 'lucide-react';
+import { LogIn, LogOut, Loader2, User, History, MessageSquare, Scan } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Header() {
-  const { user, loading, signInWithGoogle, logout } = useAuth();
+  const { user, loading, isAnonymous, signInWithGoogle, logout } = useAuth();
   const pathname = usePathname();
 
-  const navLinks = [
-    { href: '/',       label: 'Deteksi' },
-    { href: '/result', label: 'Hasil' },
-    { href: '/forum',  label: 'Forum' },
+  // Nav links yang selalu tampil
+  const baseLinks = [
+    { href: '/', label: 'Deteksi', Icon: Scan },
+    { href: '/forum', label: 'Forum', Icon: MessageSquare },
   ];
+
+  // Link tambahan hanya untuk Google user
+  const authLinks = user && !isAnonymous
+    ? [{ href: '/history', label: 'Riwayat', Icon: History }]
+    : [];
+
+  const navLinks = [baseLinks[0], ...authLinks, baseLinks[1]];
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-green-100 shadow-sm">
@@ -23,30 +30,29 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image
-            src="/skinsense.png"
+            src="/green-skin-sense.png"
             alt="SkinSense"
-            width={36}
-            height={36}
+            width={64}
+            height={64}
             className="rounded-lg"
           />
-          <span className="font-zain font-800 text-2xl font-extrabold text-green-700 tracking-tight">
+          {/* <span className="font-zain text-2xl font-extrabold text-green-700 tracking-tight">
             SkinSense
-          </span>
+          </span> */}
         </Link>
 
-        {/* Nav */}
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map(({ href, label }) => {
-            const active = pathname === href;
+            const active = pathname === href || (href !== '/' && pathname.startsWith(href));
             return (
               <Link
                 key={href}
                 href={href}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                  active
-                    ? 'bg-green-100 text-green-700'
-                    : 'text-stone-600 hover:bg-green-50 hover:text-green-700'
-                }`}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${active
+                  ? 'bg-green-100 text-green-700'
+                  : 'text-stone-600 hover:bg-green-50 hover:text-green-700'
+                  }`}
               >
                 {label}
               </Link>
@@ -54,11 +60,12 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Auth */}
+        {/* Auth area */}
         <div className="flex items-center gap-3">
           {loading ? (
             <Loader2 className="w-5 h-5 animate-spin text-green-500" />
-          ) : user ? (
+          ) : !isAnonymous && user ? (
+            /* ── Google user ── */
             <div className="flex items-center gap-2">
               {user.photoURL ? (
                 <Image
@@ -73,7 +80,7 @@ export default function Header() {
                   <User className="w-4 h-4 text-green-700" />
                 </div>
               )}
-              <span className="hidden md:block text-sm font-semibold text-stone-700">
+              <span className="hidden md:block text-sm font-semibold text-stone-700 max-w-30 truncate">
                 {user.displayName}
               </span>
               <button
@@ -85,12 +92,14 @@ export default function Header() {
               </button>
             </div>
           ) : (
+            /* ── Anonymous / Guest ── */
             <button
               onClick={signInWithGoogle}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full text-sm font-semibold transition-all shadow-sm hover:shadow-md"
             >
               <LogIn className="w-4 h-4" />
-              Masuk dengan Google
+              <span className="hidden sm:inline">Masuk dengan Google</span>
+              <span className="sm:hidden">Masuk</span>
             </button>
           )}
         </div>
@@ -99,16 +108,16 @@ export default function Header() {
 
       {/* Mobile nav */}
       <nav className="md:hidden flex border-t border-green-50">
-        {navLinks.map(({ href, label }) => {
-          const active = pathname === href;
+        {navLinks.map(({ href, label, Icon }) => {
+          const active = pathname === href || (href !== '/' && pathname.startsWith(href));
           return (
             <Link
               key={href}
               href={href}
-              className={`flex-1 text-center py-2.5 text-xs font-semibold transition-all ${
-                active ? 'text-green-700 bg-green-50' : 'text-stone-500'
-              }`}
+              className={`flex-1 flex flex-col items-center gap-0.5 py-2 text-xs font-semibold transition-all ${active ? 'text-green-700 bg-green-50' : 'text-stone-500'
+                }`}
             >
+              <Icon className="w-4 h-4" />
               {label}
             </Link>
           );

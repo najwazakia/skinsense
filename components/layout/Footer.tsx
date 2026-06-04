@@ -11,7 +11,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
-              <Image src="/skinsense.png" alt="SkinSense" width={28} height={28} className="rounded" />
+              {/* <Image src="/green-skin-sense.png" alt="SkinSense" width={48} height={48} className="rounded" /> */}
               <span className="font-zain text-xl font-extrabold text-white">SkinSense</span>
             </div>
             <p className="text-sm text-green-300 leading-relaxed">
@@ -25,9 +25,9 @@ export default function Footer() {
             <h4 className="font-zain font-bold text-white mb-3">Navigasi</h4>
             <ul className="space-y-2 text-sm">
               {[
-                { href: '/',       label: 'Deteksi Kulit' },
+                { href: '/', label: 'Deteksi Kulit' },
                 { href: '/result', label: 'Hasil Deteksi' },
-                { href: '/forum',  label: 'Forum Diskusi' },
+                { href: '/forum', label: 'Forum Diskusi' },
               ].map(({ href, label }) => (
                 <li key={href}>
                   <Link href={href} className="text-green-300 hover:text-white transition-colors">

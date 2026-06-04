@@ -6,12 +6,14 @@ interface Props {
 }
 
 export default function DetectionResult({ result }: Props) {
+  const confidence = Number(result.confidence);
+
   const confidenceColor =
-    result.confidence >= 80
+    confidence >= 80
       ? 'text-green-600 bg-green-50'
-      : result.confidence >= 60
-      ? 'text-yellow-600 bg-yellow-50'
-      : 'text-red-600 bg-red-50';
+      : confidence >= 60
+        ? 'text-yellow-600 bg-yellow-50'
+        : 'text-red-600 bg-red-50';
 
   return (
     <div className="bg-white rounded-2xl border border-green-100 p-6 shadow-sm space-y-4">
@@ -33,7 +35,7 @@ export default function DetectionResult({ result }: Props) {
 
         <div className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold ${confidenceColor}`}>
           <TrendingUp className="w-4 h-4" />
-          <span className="text-2xl font-zain">{result.confidence}%</span>
+          <span className="text-2xl font-zain">{confidence.toFixed(1)}%</span>
         </div>
       </div>
 
@@ -41,15 +43,38 @@ export default function DetectionResult({ result }: Props) {
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-stone-400">
           <span>Tingkat Kepercayaan</span>
-          <span>{result.confidence}%</span>
+          <span>{confidence.toFixed(1)}%</span>
         </div>
         <div className="w-full bg-stone-100 rounded-full h-2">
           <div
             className="bg-linear-to-r from-green-400 to-green-600 h-2 rounded-full transition-all duration-700"
-            style={{ width: `${Math.min(result.confidence, 100)}%` }}
+            style={{ width: `${Math.min(confidence, 100)}%` }}
           />
         </div>
       </div>
+
+      {/* Top 3 jika tersedia */}
+      {result.top_3_result && result.top_3_result.length > 1 && (
+        <div className="space-y-2 pt-1">
+          <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide">
+            Prediksi Lainnya
+          </p>
+          {result.top_3_result.slice(1).map((item, i) => (
+            <div key={i} className="flex items-center gap-3">
+              <span className="text-sm text-stone-600 w-36 truncate">{item.class}</span>
+              <div className="flex-1 bg-stone-100 rounded-full h-1.5">
+                <div
+                  className="bg-stone-300 h-1.5 rounded-full"
+                  style={{ width: `${Math.min(Number(item.confidence), 100)}%` }}
+                />
+              </div>
+              <span className="text-xs text-stone-400 w-12 text-right">
+                {Number(item.confidence).toFixed(1)}%
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
 
       <p className="text-xs text-stone-400 italic">
         * Hasil ini bukan pengganti diagnosis dokter. Konsultasikan dengan dermatologis untuk penanganan yang tepat.
