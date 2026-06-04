@@ -40,23 +40,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     /**
      * onAuthStateChanged menangani 3 skenario:
      *
-     * 1. fbUser === null  →  belum ada sesi sama sekali
+     * 1. firebaseUser === null  →  belum ada sesi sama sekali
      *    → panggil signInAnonymously() secara otomatis
      *    → Firebase menyimpan sesi anonymous ke IndexedDB
-     *    → callback ini akan dipanggil lagi dengan fbUser anonymous
+     *    → callback ini akan dipanggil lagi dengan firebaseUser anonymous
      *
-     * 2. fbUser.isAnonymous === true  →  sesi anonymous aktif
+     * 2. firebaseUser.isAnonymous === true  →  sesi anonymous aktif
      *    → setUser(null), tidak butuh data backend
      *
-     * 3. fbUser.isAnonymous === false  →  sesi Google aktif
+     * 3. firebaseUser.isAnonymous === false  →  sesi Google aktif
      *    → sync data user ke backend via /auth/google
      *
      * Firebase mengelola persistensi token di IndexedDB secara otomatis,
      * sehingga refresh/restart browser tetap mengenali sesi tanpa
      * perlu menyimpan apapun di localStorage secara manual.
      */
-    const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
-      if (!fbUser) {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (!firebaseUser) {
         // Tidak ada sesi → buat sesi anonymous baru secara otomatis
         // onAuthStateChanged akan terpanggil lagi setelah berhasil
         await signInAnonymously(auth).catch(() => {
@@ -68,9 +68,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return; // Jangan panggil setLoading di sini; tunggu callback berikutnya
       }
 
-      setFirebaseUser(fbUser);
+      setFirebaseUser(firebaseUser);
 
-      if (fbUser.isAnonymous) {
+      if (firebaseUser.isAnonymous) {
         // Guest / anonymous — tidak butuh data dari backend
         setUser(null);
       } else {

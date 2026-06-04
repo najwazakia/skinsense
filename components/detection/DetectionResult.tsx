@@ -1,4 +1,4 @@
-import { CheckCircle, Microscope, TrendingUp } from 'lucide-react';
+import { CheckCircle, Microscope } from 'lucide-react';
 import type { DetectionResult as DetectionResultType } from '@/types';
 
 interface Props {
@@ -34,7 +34,6 @@ export default function DetectionResult({ result }: Props) {
         </div>
 
         <div className={`flex items-center gap-2 px-4 py-3 rounded-xl font-bold ${confidenceColor}`}>
-          <TrendingUp className="w-4 h-4" />
           <span className="text-2xl font-zain">{confidence.toFixed(1)}%</span>
         </div>
       </div>
@@ -54,7 +53,7 @@ export default function DetectionResult({ result }: Props) {
       </div>
 
       {/* Top 3 jika tersedia */}
-      {result.top_3_result && result.top_3_result.length > 1 && (
+      {result.top_3_result && (
         <div className="space-y-2 pt-1">
           <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide">
             Prediksi Lainnya
@@ -77,7 +76,7 @@ export default function DetectionResult({ result }: Props) {
       )}
 
       <p className="text-xs text-stone-400 italic">
-        * Hasil ini bukan pengganti diagnosis dokter. Konsultasikan dengan dermatologis untuk penanganan yang tepat.
+        Hasil ini tidak digunakan untuk pengganti diagnosis dokter. Lakukan konsultasi langsung dengan dermatologis untuk penanganan yang tepat.
       </p>
     </div>
   );

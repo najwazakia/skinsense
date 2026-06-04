@@ -55,7 +55,7 @@ export default function ForumPage() {
           <Lock className="w-10 h-10 text-green-600" />
         </div>
         <h2 className="font-zain text-3xl font-extrabold text-stone-800">
-          Forum Hanya untuk Anggota
+          Forum Hanya untuk User
         </h2>
         <p className="text-stone-500">
           Login dengan akun Google untuk mengakses forum diskusi komunitas SkinSense.
@@ -106,7 +106,7 @@ export default function ForumPage() {
         </div>
         <button
           type="submit"
-          className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-sm font-semibold transition-colors"
+          className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-sm font-semibold transition-colors cursor-pointer"
         >
           Cari
         </button>
@@ -114,7 +114,7 @@ export default function ForumPage() {
           <button
             type="button"
             onClick={() => { setSearch(''); fetchPosts(); }}
-            className="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-500 rounded-xl text-sm transition-colors"
+            className="px-4 py-2.5 bg-red-400 hover:bg-red-500 text-stone-700 rounded-xl text-sm font-semibold  transition-colors cursor-pointer"
           >
             Reset
           </button>

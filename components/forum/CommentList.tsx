@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Send, Loader2, LogIn, AlertCircle } from 'lucide-react';
 import { getComments, createComment } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
@@ -18,6 +18,8 @@ export default function CommentList({ postId }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [text, setText] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const fetchComments = useCallback(async () => {
     if (isAnonymous || !user) {
@@ -42,6 +44,14 @@ export default function CommentList({ postId }: Props) {
   }, [postId, user, isAnonymous]);
 
   useEffect(() => { fetchComments(); }, [fetchComments]);
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    }
+  }, [text]);
 
   const handleSubmit = async () => {
     if (!text.trim() || !user) return;
@@ -74,19 +84,20 @@ export default function CommentList({ postId }: Props) {
 
       {/* Input komentar — hanya untuk Google user */}
       {!isAnonymous && user && (
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
           <textarea
+            ref={textareaRef}
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Tulis komentar... (Ctrl+Enter untuk kirim)"
-            rows={2}
-            className="flex-1 px-4 py-3 text-sm rounded-xl border border-stone-200 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 resize-none"
+            rows={1}
+            className="flex-1 px-4 py-3 text-sm rounded-xl border border-stone-200 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 resize-none overflow-hidden"
           />
           <button
             onClick={handleSubmit}
             disabled={submitting || !text.trim()}
-            className="self-end px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors disabled:opacity-50"
+            className="self-end px-4 py-3 cursor-pointer bg-green-600 hover:bg-green-700 text-white rounded-xl transition-colors disabled:opacity-50"
           >
             {submitting
               ? <Loader2 className="w-4 h-4 animate-spin" />
@@ -130,11 +141,11 @@ export default function CommentList({ postId }: Props) {
           </p>
         ) : (
           <div>
-            {comments.map((c) => (
+            {comments.map((comment) => (
               <CommentItem
-                key={c.id}
+                key={comment.id}
                 postId={postId}
-                comment={c}
+                comment={comment}
                 onRefresh={fetchComments}
               />
             ))}

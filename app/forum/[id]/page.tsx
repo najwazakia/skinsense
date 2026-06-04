@@ -95,7 +95,6 @@ export default function PostDetailPage() {
     );
   }
 
-  const netVote = post.upvoteCount - post.downvoteCount;
   const createdAt = parseFirestoreDate(post.createdAt);
 
   return (
@@ -225,9 +224,6 @@ export default function PostDetailPage() {
             <ThumbsDown className="w-4 h-4" />
             {post.downvoteCount}
           </button>
-          <span className={`text-sm font-bold ml-2 ${netVote > 0 ? 'text-green-600' : netVote < 0 ? 'text-red-500' : 'text-stone-400'}`}>
-            {netVote > 0 ? `+${netVote}` : netVote} poin
-          </span>
           {voteLoading && <Loader2 className="w-4 h-4 animate-spin text-green-500 ml-auto" />}
           {!user && (
             <span className="text-xs text-stone-400 ml-auto">Login untuk vote</span>

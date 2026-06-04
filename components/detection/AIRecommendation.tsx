@@ -43,7 +43,7 @@ export default function AIRecommendation({ recommendation }: Props) {
         <Sparkles className="w-5 h-5" />
         <h3 className="font-zain text-xl font-bold">Rekomendasi AI</h3>
         <span className="ml-auto text-xs px-2 py-0.5 bg-green-100 text-green-600 rounded-full font-semibold">
-          Powered by Gemini
+          Gemini 3.5 Flash
         </span>
       </div>
 

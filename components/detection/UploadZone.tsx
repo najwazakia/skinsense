@@ -79,7 +79,7 @@ export default function UploadZone({ onFileSelect, previewUrl, onReset, isLoadin
             {isDragging ? 'Lepaskan gambar di sini' : 'Drag & drop gambar kulit'}
           </p>
           <p className="text-sm text-stone-400 mt-1">atau klik untuk memilih file</p>
-          <p className="text-xs text-stone-300 mt-2">JPG, PNG, WEBP — Maks. 10 MB</p>
+          <p className="text-xs text-stone-300 mt-2">JPG atau PNG — Maks. 10 MB</p>
         </div>
         <input
           type="file"

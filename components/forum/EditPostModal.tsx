@@ -38,7 +38,7 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
         }
         setTags((prev) => [...prev, trimmed]);
         setTagInput('');
-        showTagFeedback(`"${trimmed}" ditambahkan ✓`);
+        showTagFeedback(`tag "${trimmed}" ditambahkan`);
     };
 
     const removeTag = (tag: string) => setTags((prev) => prev.filter((t) => t !== tag));

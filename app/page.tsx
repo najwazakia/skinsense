@@ -7,6 +7,13 @@ import UploadZone from '@/components/detection/UploadZone';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { Scan, ArrowRight, AlertCircle } from 'lucide-react';
 
+const tips = [
+  'Pastikan foto jernih dan terang',
+  'Fokuskan kamera pada area yang ingin dideteksi',
+  'Gunakan cahaya alami jika memungkinkan',
+  'Hindari bayangan yang menutupi area kulit',
+]
+
 export default function HomePage() {
   const router = useRouter();
   const {
@@ -24,7 +31,7 @@ export default function HomePage() {
   const isLoading = isUploading || isDetecting || isLoadingRecommendation;
 
   const loadingLabel = isUploading
-    ? 'Mengupload gambar...'
+    ? 'Sedang upload gambar...'
     : isDetecting
       ? 'Menganalisis kondisi kulit...'
       : 'Mengambil rekomendasi AI...';
@@ -53,7 +60,7 @@ export default function HomePage() {
           Kenali Kondisi <span className="text-green-600">Kulitmu</span>
         </h1>
         <p className="text-stone-500 max-w-md mx-auto leading-relaxed">
-          Upload foto kondisi kulit kamu, dan biarkan AI kami menganalisis serta memberikan rekomendasi penanganan yang tepat.
+          Upload foto kondisi kulit kamu, dan biarkan model AI kami menganalisis serta memberikan rekomendasi penanganan yang tepat.
         </p>
       </div>
 
@@ -82,14 +89,9 @@ export default function HomePage() {
       {/* Tips */}
       {!previewUrl && !isLoading && (
         <div className="bg-green-50 rounded-2xl p-5 border border-green-100 space-y-2">
-          <p className="font-zain font-bold text-green-800">Tips untuk hasil terbaik:</p>
+          <p className="font-zain font-bold text-green-800">Tips untuk hasil deteksi yang baik:</p>
           <ul className="text-sm text-green-700 space-y-1.5">
-            {[
-              'Pastikan foto jernih dan terang',
-              'Fokuskan kamera pada area yang ingin dideteksi',
-              'Gunakan cahaya alami jika memungkinkan',
-              'Hindari bayangan yang menutupi area kulit',
-            ].map((tip, i) => (
+            {tips.map((tip, i) => (
               <li key={i} className="flex items-start gap-2">
                 <ArrowRight className="w-3.5 h-3.5 mt-0.5 text-green-500 shrink-0" />
                 {tip}

@@ -33,7 +33,7 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
       showTagFeedback('Maksimal 5 tag');
       return;
     }
-    if (tags.map((t) => t.toLowerCase()).includes(trimmed.toLowerCase())) {
+    if (tags.map((tag) => tag.toLowerCase()).includes(trimmed.toLowerCase())) {
       showTagFeedback(`"${trimmed}" sudah ada`);
       setTagInput('');
       return;
@@ -192,7 +192,7 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleTagKeyDown}
                 disabled={tags.length >= 5}
-                placeholder={tags.length >= 5 ? 'Maksimal 5 tag' : 'Ketik tag, tekan Enter...'}
+                placeholder={tags.length >= 5 ? 'Maksimal 5 tag' : 'Ketik tag, atau tekan Enter...'}
                 className="flex-1 px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 text-sm disabled:bg-stone-50 disabled:cursor-not-allowed"
               />
               <button

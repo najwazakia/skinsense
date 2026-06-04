@@ -1,6 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, Mail, Shield } from 'lucide-react';
+import { Mail, Shield } from 'lucide-react';
+
+const footerLinks = [
+  { href: '/', label: 'Deteksi Kulit' },
+  { href: '/result', label: 'Hasil Deteksi' },
+  { href: '/forum', label: 'Forum Diskusi' },
+]
 
 export default function Footer() {
   return (
@@ -24,11 +30,7 @@ export default function Footer() {
           <div>
             <h4 className="font-zain font-bold text-white mb-3">Navigasi</h4>
             <ul className="space-y-2 text-sm">
-              {[
-                { href: '/', label: 'Deteksi Kulit' },
-                { href: '/result', label: 'Hasil Deteksi' },
-                { href: '/forum', label: 'Forum Diskusi' },
-              ].map(({ href, label }) => (
+              {footerLinks.map(({ href, label }) => (
                 <li key={href}>
                   <Link href={href} className="text-green-300 hover:text-white transition-colors">
                     {label}
@@ -55,9 +57,9 @@ export default function Footer() {
         </div>
 
         <div className="pt-6 flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-green-400">
-          <p>© {new Date().getFullYear()} SkinSense. Semua hak dilindungi.</p>
+          <p>© {new Date().getFullYear()} SkinSense</p>
           <p className="flex items-center gap-1">
-            Dibuat dengan <Heart className="w-3.5 h-3.5 text-green-500" /> untuk kesehatan kulit kamu
+            v 1.0.0
           </p>
         </div>
       </div>

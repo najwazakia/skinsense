@@ -37,7 +37,6 @@ function ConfidenceBadge({ value }: { value: number }) {
                 : 'bg-red-100 text-red-700';
     return (
         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${cls}`}>
-            <TrendingUp className="w-2.5 h-2.5" />
             {value.toFixed(1)}%
         </span>
     );
@@ -157,7 +156,7 @@ export default function HistoryPage() {
                     <Lock className="w-10 h-10 text-green-600" />
                 </div>
                 <h2 className="font-zain text-3xl font-extrabold text-stone-800">
-                    Riwayat Tersimpan untuk Anggota
+                    Riwayat Deteksi untuk User
                 </h2>
                 <p className="text-stone-500 max-w-sm mx-auto">
                     Login dengan akun Google agar setiap hasil deteksi kulitmu tersimpan dan bisa dilihat kapan saja.
@@ -168,7 +167,7 @@ export default function HistoryPage() {
                         className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold text-sm transition-all shadow-md"
                     >
                         <Scan className="w-4 h-4" />
-                        Coba Deteksi Dulu
+                        Deteksi yuk!
                     </Link>
                 </div>
             </div>

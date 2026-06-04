@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { MessageCircle, ThumbsUp, Tag } from 'lucide-react';
+import { MessageCircle, ThumbsUp, Tag, ThumbsDown } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import { safeFormatDistance } from '@/lib/date';
@@ -12,7 +12,8 @@ interface Props {
 }
 
 export default function PostCard({ post }: Props) {
-  const netVote = post.upvoteCount - post.downvoteCount;
+  const upvoteCounts = post.upvoteCount;
+  const downvoteCounts = post.downvoteCount
 
   const timeAgo = safeFormatDistance(
     post.createdAt,
@@ -52,8 +53,12 @@ export default function PostCard({ post }: Props) {
         <div className="flex items-center gap-4 text-sm text-stone-400 pt-1">
           <span className="flex items-center gap-1">
             <ThumbsUp className="w-3.5 h-3.5" />
-            <span className={netVote > 0 ? 'text-green-600 font-semibold' : ''}>
-              {netVote > 0 ? `+${netVote}` : netVote}
+            <span className={upvoteCounts > 0 ? 'text-green-600 font-semibold' : ''}>
+              {upvoteCounts > 0 ? `${upvoteCounts}` : upvoteCounts}
+            </span>
+            <ThumbsDown className="w-3.5 h-3.5 ml-1" />
+            <span className={downvoteCounts > 0 ? 'text-red-600 font-semibold' : ''}>
+              {downvoteCounts > 0 ? `${downvoteCounts}` : downvoteCounts}
             </span>
           </span>
           <span className="flex items-center gap-1">

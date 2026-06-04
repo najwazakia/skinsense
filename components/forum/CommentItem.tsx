@@ -30,7 +30,6 @@ export default function CommentItem({ postId, comment, onRefresh }: Props) {
   };
 
   const handleDelete = async () => {
-    if (!confirm('Hapus komentar ini?')) return;
     setLoading(true);
     await deleteComment(postId, comment.id);
     setLoading(false);
@@ -71,11 +70,11 @@ export default function CommentItem({ postId, comment, onRefresh }: Props) {
           {comment.is_author && !isEditing && (
             <div className="flex items-center gap-1">
               <button onClick={() => setIsEditing(true)}
-                className="p-1 rounded text-stone-400 hover:text-green-600 hover:bg-green-50 transition-colors">
+                className="p-1 rounded text-stone-400 cursor-pointer hover:text-green-600 hover:bg-green-50 transition-colors">
                 <Pencil className="w-3.5 h-3.5" />
               </button>
               <button onClick={handleDelete} disabled={loading}
-                className="p-1 rounded text-stone-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                className="p-1 rounded text-stone-400 cursor-pointer hover:text-red-500 hover:bg-red-50 transition-colors">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -92,17 +91,19 @@ export default function CommentItem({ postId, comment, onRefresh }: Props) {
             />
             <div className="flex gap-2">
               <button onClick={handleUpdate} disabled={loading}
-                className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white text-xs rounded-lg font-semibold">
+                className="flex items-center gap-1 px-3 py-1 cursor-pointer bg-green-600 text-white text-xs rounded-lg font-semibold">
                 <Check className="w-3 h-3" /> Simpan
               </button>
               <button onClick={() => setIsEditing(false)}
-                className="flex items-center gap-1 px-3 py-1 bg-stone-100 text-stone-600 text-xs rounded-lg font-semibold">
+                className="flex items-center gap-1 px-3 py-1 cursor-pointer bg-stone-100 text-stone-600 text-xs rounded-lg font-semibold">
                 <X className="w-3 h-3" /> Batal
               </button>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-stone-600 mt-1 leading-relaxed">{comment.text}</p>
+          <p className="text-sm text-stone-600 mt-1 leading-relaxed wrap-break-word whitespace-pre-wrap">
+            {comment.text}
+          </p>
         )}
       </div>
     </div>
