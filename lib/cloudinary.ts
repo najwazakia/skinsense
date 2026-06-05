@@ -1,4 +1,3 @@
-// Upload gambar ke Cloudinary sebelum dikirim ke API
 export async function uploadToCloudinary(file: File): Promise<{
   image_URL: string;
   cloudinary_public_id: string;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Search, Loader2, Lock, AlertCircle } from 'lucide-react';
+import { Plus, Search, Lock, AlertCircle } from 'lucide-react';
 import { getAllPosts } from '@/lib/api';
 import { useAuth } from '@/context/AuthContext';
 import PostCard from '@/components/forum/PostCard';
@@ -19,35 +19,29 @@ export default function ForumPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
 
-  const fetchPosts = useCallback(async (q?: string) => {
+  const fetchPosts = useCallback(async (title?: string) => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getAllPosts(q ? { title: q } : undefined);
+      const data = await getAllPosts(title ? { title } : undefined);
       setPosts(data);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Gagal memuat postingan';
-      setError(msg);
+      const errorMessage = err instanceof Error ? err.message : 'Gagal memuat postingan';
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  /**
-   * Tunggu authLoading selesai sebelum fetch.
-   * Ini memastikan auth.currentUser sudah terisi (anonymous atau Google)
-   * sehingga token selalu tersedia saat memanggil API optionalAuth.
-   */
   useEffect(() => {
     if (!authLoading) fetchPosts();
   }, [fetchPosts, authLoading]);
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: React.SubmitEvent) => {
     e.preventDefault();
     fetchPosts(search || undefined);
   };
 
-  // Guard: perlu login Google untuk akses forum
   if (!authLoading && isAnonymous) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center space-y-6">
@@ -73,7 +67,6 @@ export default function ForumPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
-      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-zain text-3xl font-extrabold text-stone-800">Forum Diskusi</h1>
@@ -84,7 +77,7 @@ export default function ForumPage() {
         {user && !isAnonymous && (
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm hover:shadow-md shrink-0"
+            className="flex cursor-pointer items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-semibold transition-all shadow-sm hover:shadow-md shrink-0"
           >
             <Plus className="w-4 h-4" />
             Post Baru
@@ -92,7 +85,7 @@ export default function ForumPage() {
         )}
       </div>
 
-      {/* Search */}
+      {/* Search Bar forum */}
       <form onSubmit={handleSearch} className="flex gap-2">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
@@ -121,12 +114,11 @@ export default function ForumPage() {
         )}
       </form>
 
-      {/* Error */}
       {error && (
         <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-100 rounded-xl text-red-700">
           <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-sm">Gagal memuat postingan</p>
+            <p className="font-semibold text-sm">Gagal menampilkan postingan</p>
             <p className="text-sm mt-0.5">{error}</p>
             <button onClick={() => fetchPosts()} className="mt-2 text-xs font-semibold underline">
               Coba lagi
@@ -135,11 +127,12 @@ export default function ForumPage() {
         </div>
       )}
 
-      {/* Skeleton loading */}
+
+      {/* animasi loading & list postingan */}
       {(loading || authLoading) ? (
         <div className="space-y-3">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <PostCardSkeleton key={i} />
+          {Array.from({ length: 4 }).map((item, index) => (
+            <PostCardSkeleton key={index} />
           ))}
         </div>
       ) : posts.length === 0 && !error ? (
@@ -162,6 +155,7 @@ export default function ForumPage() {
         </div>
       )}
 
+      {/* Modal Create postingan */}
       {showCreateModal && (
         <CreatePostModal
           onClose={() => setShowCreateModal(false)}

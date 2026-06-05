@@ -27,10 +27,9 @@ export default function PostDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [voteLoading, setVoteLoading] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
+  const [confirmationDelete, setConfimationDelete] = useState(false);
 
   const loadPost = async () => {
-    // FIX-5: Ganti .then() tanpa .catch() → pakai try-catch penuh
     try {
       const data = await getPostById(id);
       setPost(data);
@@ -43,17 +42,16 @@ export default function PostDetailPage() {
     }
   };
 
-  useEffect(() => { loadPost(); }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { loadPost(); }, [id]);
 
   const handleVote = async (type: 'upvote' | 'downvote') => {
     if (!user) return;
     setVoteLoading(true);
     try {
       await votePost(id, type);
-      const updated = await getPostById(id);
-      setPost(updated);
+      const updatedPost = await getPostById(id);
+      setPost(updatedPost);
     } catch {
-      // Vote gagal — tidak perlu crash, cukup silent
     } finally {
       setVoteLoading(false);
     }
@@ -64,14 +62,13 @@ export default function PostDetailPage() {
       await deletePost(id);
       router.push('/forum');
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })
+      const errorMessage = (err as { response?: { data?: { message?: string } } })
         ?.response?.data?.message ?? 'Gagal menghapus postingan';
-      setError(msg);
-      setDeleteConfirm(false);
+      setError(errorMessage);
+      setConfimationDelete(false);
     }
   };
 
-  // ── Loading ──
   if (loading) {
     return (
       <div className="flex justify-center py-20">
@@ -80,7 +77,6 @@ export default function PostDetailPage() {
     );
   }
 
-  // ── Error / Not found ──
   if (error || !post) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-20 text-center space-y-4">
@@ -99,15 +95,12 @@ export default function PostDetailPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
-      {/* Back */}
       <Link href="/forum" className="flex items-center gap-2 text-sm text-stone-500 hover:text-green-700 font-semibold transition-colors w-fit">
         <ArrowLeft className="w-4 h-4" />
         Forum
       </Link>
 
-      {/* Post */}
       <article className="bg-white rounded-2xl border border-stone-100 p-6 shadow-sm space-y-5">
-        {/* Tags */}
         {post.tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5">
             {post.tags.map((tag) => (
@@ -121,7 +114,7 @@ export default function PostDetailPage() {
 
         <h1 className="font-zain text-3xl font-extrabold text-stone-800 wrap-break-word" >{post.title}</h1>
 
-        {/* Author + Edit/Delete */}
+        {/* Foto profil author dan informasi lain */}
         {post.author && (
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -148,19 +141,19 @@ export default function PostDetailPage() {
               </div>
             </div>
 
-            {/* FIX-5 + MISSING-2: Edit button sekarang punya handler & modal */}
+            {/* Edit & Hapus Postingan */}
             {post.is_author && (
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setShowEdit(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-stone-500 hover:text-green-600 hover:bg-green-50 transition-colors text-xs font-semibold"
+                  className="flex cursor-pointer items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-stone-500 hover:text-green-600 hover:bg-green-50 transition-colors text-xs font-semibold"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                   Edit
                 </button>
-                {!deleteConfirm ? (
+                {!confirmationDelete ? (
                   <button
-                    onClick={() => setDeleteConfirm(true)}
+                    onClick={() => setConfimationDelete(true)}
                     className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-stone-500 hover:text-red-500 hover:bg-red-50 transition-colors text-xs font-semibold"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -171,13 +164,13 @@ export default function PostDetailPage() {
                     <span className="text-xs text-stone-500 mr-1">Yakin?</span>
                     <button
                       onClick={handleDelete}
-                      className="px-2.5 py-1.5 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors"
+                      className="px-2.5 py-1.5 rounded-lg bg-red-500 text-white text-xs font-semibold hover:bg-red-600 transition-colors cursor-pointer"
                     >
                       Ya, Hapus
                     </button>
                     <button
-                      onClick={() => setDeleteConfirm(false)}
-                      className="px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-600 text-xs font-semibold hover:bg-stone-200 transition-colors"
+                      onClick={() => setConfimationDelete(false)}
+                      className="px-2.5 py-1.5 rounded-lg bg-stone-100 text-stone-600 text-xs font-semibold hover:bg-stone-200 transition-colors cursor-pointer"
                     >
                       Batal
                     </button>
@@ -188,7 +181,7 @@ export default function PostDetailPage() {
           </div>
         )}
 
-        {/* Image */}
+        {/* Gambar postingan */}
         {post.image_URL && (
           <div className="rounded-xl overflow-hidden border border-stone-100">
             <Image
@@ -201,7 +194,7 @@ export default function PostDetailPage() {
           </div>
         )}
 
-        {/* Content */}
+        {/* Konten postingan */}
         <p className="text-stone-700 leading-relaxed whitespace-pre-wrap wrap-break-word">{post.content}</p>
 
         {/* Votes */}
@@ -210,7 +203,7 @@ export default function PostDetailPage() {
             onClick={() => handleVote('upvote')}
             disabled={!user || voteLoading}
             title={!user ? 'Login untuk vote' : ''}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-stone-200 hover:border-green-300 hover:bg-green-50 hover:text-green-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm font-semibold text-stone-600"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-stone-200 hover:border-green-300 hover:bg-green-50 hover:text-green-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm font-semibold text-stone-600 cursor-pointer"
           >
             <ThumbsUp className="w-4 h-4" />
             {post.upvoteCount}
@@ -219,7 +212,7 @@ export default function PostDetailPage() {
             onClick={() => handleVote('downvote')}
             disabled={!user || voteLoading}
             title={!user ? 'Login untuk vote' : ''}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-stone-200 hover:border-red-300 hover:bg-red-50 hover:text-red-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm font-semibold text-stone-600"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl border border-stone-200 hover:border-red-300 hover:bg-red-50 hover:text-red-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-sm font-semibold text-stone-600 cursor-pointer"
           >
             <ThumbsDown className="w-4 h-4" />
             {post.downvoteCount}
@@ -231,12 +224,11 @@ export default function PostDetailPage() {
         </div>
       </article>
 
-      {/* Comments */}
       <div className="bg-white rounded-2xl border border-stone-100 p-6 shadow-sm">
         <CommentList postId={id} />
       </div>
 
-      {/* Edit Modal */}
+      {/* Modal Edit Postingan */}
       {showEdit && (
         <EditPostModal
           post={post}

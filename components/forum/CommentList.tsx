@@ -23,8 +23,6 @@ export default function CommentList({ postId }: Props) {
 
   const fetchComments = useCallback(async () => {
     if (isAnonymous || !user) {
-      // Endpoint getComments menggunakan requireAuth di server —
-      // anonymous user tidak bisa mengakses, jadi tidak perlu fetch.
       setLoading(false);
       return;
     }
@@ -34,16 +32,17 @@ export default function CommentList({ postId }: Props) {
       const data = await getComments(postId);
       setComments(data);
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })
+      const errorMessage = (err as { response?: { data?: { message?: string } } })
         ?.response?.data?.message
         ?? (err instanceof Error ? err.message : 'Gagal memuat komentar');
-      setError(msg);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
   }, [postId, user, isAnonymous]);
 
   useEffect(() => { fetchComments(); }, [fetchComments]);
+
   useEffect(() => {
     const textarea = textareaRef.current;
     if (textarea) {
@@ -61,9 +60,9 @@ export default function CommentList({ postId }: Props) {
       setText('');
       await fetchComments();
     } catch (err: unknown) {
-      const msg = (err as { response?: { data?: { message?: string } } })
+      const errorMessage = (err as { response?: { data?: { message?: string } } })
         ?.response?.data?.message ?? 'Gagal mengirim komentar';
-      setError(msg);
+      setError(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -82,7 +81,6 @@ export default function CommentList({ postId }: Props) {
         Komentar {!loading && !isAnonymous && `(${comments.length})`}
       </h4>
 
-      {/* Input komentar — hanya untuk Google user */}
       {!isAnonymous && user && (
         <div className="flex gap-3 items-center">
           <textarea
@@ -107,7 +105,7 @@ export default function CommentList({ postId }: Props) {
         </div>
       )}
 
-      {/* Error */}
+      {/* jika error atau guest user */}
       {error && (
         <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
           <AlertCircle className="w-4 h-4 shrink-0" />
@@ -115,7 +113,6 @@ export default function CommentList({ postId }: Props) {
         </div>
       )}
 
-      {/* State: anonymous user */}
       {isAnonymous && (
         <div className="flex items-center gap-3 p-4 bg-green-50 border border-green-100 rounded-xl">
           <LogIn className="w-4 h-4 text-green-600 shrink-0" />
@@ -126,14 +123,13 @@ export default function CommentList({ postId }: Props) {
         </div>
       )}
 
-      {/* Loading */}
+      {/* list komen */}
       {loading && !isAnonymous && (
         <div className="flex justify-center py-6">
           <Loader2 className="w-6 h-6 animate-spin text-green-500" />
         </div>
       )}
 
-      {/* Komentar list */}
       {!loading && !isAnonymous && (
         comments.length === 0 ? (
           <p className="text-center text-sm text-stone-400 py-8">

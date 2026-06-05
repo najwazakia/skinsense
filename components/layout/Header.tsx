@@ -3,20 +3,19 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogIn, LogOut, Loader2, User, History, MessageSquare, Scan } from 'lucide-react';
+import { LogIn, LogOut, Loader2, User, History, MessageSquare, Scan, FileText } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Header() {
   const { user, loading, isAnonymous, signInWithGoogle, logout } = useAuth();
   const pathname = usePathname();
 
-  // Nav links yang selalu tampil
   const baseLinks = [
     { href: '/', label: 'Deteksi', Icon: Scan },
+    { href: '/result', label: 'Hasil', Icon: FileText },
     { href: '/forum', label: 'Forum', Icon: MessageSquare },
   ];
 
-  // Link tambahan hanya untuk Google user
   const authLinks = user && !isAnonymous
     ? [{ href: '/history', label: 'Riwayat', Icon: History }]
     : [];
@@ -27,7 +26,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-green-100 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
 
-        {/* Logo */}
+        {/* Logo nav */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <Image
             src="/green-skin-sense.png"
@@ -41,7 +40,7 @@ export default function Header() {
           </span> */}
         </Link>
 
-        {/* Desktop Nav */}
+        {/* list navigasi */}
         <nav className="hidden md:flex items-center gap-1">
           {navLinks.map(({ href, label }) => {
             const active = pathname === href || (href !== '/' && pathname.startsWith(href));
@@ -60,12 +59,12 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Auth area */}
+        {/* Google login button */}
         <div className="flex items-center gap-3">
           {loading ? (
             <Loader2 className="w-5 h-5 animate-spin text-green-500" />
           ) : !isAnonymous && user ? (
-            /* ── Google user ── */
+            // desain google user
             <div className="flex items-center gap-2">
               {user.photoURL ? (
                 <Image
@@ -92,7 +91,7 @@ export default function Header() {
               </button>
             </div>
           ) : (
-            /* ── Anonymous / Guest ── */
+            // desain guest user
             <button
               onClick={signInWithGoogle}
               className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full text-sm font-semibold transition-all shadow-sm hover:shadow-md"
@@ -106,7 +105,7 @@ export default function Header() {
 
       </div>
 
-      {/* Mobile nav */}
+      {/* mobile navigation */}
       <nav className="md:hidden flex border-t border-green-50">
         {navLinks.map(({ href, label, Icon }) => {
           const active = pathname === href || (href !== '/' && pathname.startsWith(href));

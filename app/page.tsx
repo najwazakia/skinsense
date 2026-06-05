@@ -36,13 +36,12 @@ export default function HomePage() {
       ? 'Menganalisis kondisi kulit...'
       : 'Mengambil rekomendasi AI...';
 
+  // simpanan local untuk hasil deteksi di session storage di web user
   useEffect(() => {
     if (detectionResult && recommendation) {
       sessionStorage.setItem('detectionResult', JSON.stringify(detectionResult));
       sessionStorage.setItem('recommendation', JSON.stringify(recommendation));
-      // Simpan Cloudinary URL (bukan blob) agar tetap valid setelah navigasi/refresh
       sessionStorage.setItem('resultImageUrl', detectionResult.image_URL || '');
-      // Tetap simpan blob untuk preview sementara jika tersedia
       sessionStorage.setItem('previewUrl', previewUrl || '');
       router.push('/result');
     }
@@ -50,7 +49,6 @@ export default function HomePage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-12 space-y-8">
-      {/* Hero */}
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
           <Scan className="w-4 h-4" />
@@ -64,7 +62,6 @@ export default function HomePage() {
         </p>
       </div>
 
-      {/* Upload */}
       <UploadZone
         onFileSelect={detectImage}
         previewUrl={previewUrl}
@@ -72,10 +69,8 @@ export default function HomePage() {
         isLoading={isLoading}
       />
 
-      {/* Loading */}
       {isLoading && <LoadingSpinner label={loadingLabel} />}
 
-      {/* Error */}
       {error && (
         <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-100 rounded-xl text-red-700">
           <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
@@ -86,7 +81,7 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Tips */}
+      {/* List Tips Hasil Deteksi */}
       {!previewUrl && !isLoading && (
         <div className="bg-green-50 rounded-2xl p-5 border border-green-100 space-y-2">
           <p className="font-zain font-bold text-green-800">Tips untuk hasil deteksi yang baik:</p>

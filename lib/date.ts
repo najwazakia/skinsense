@@ -22,22 +22,18 @@ export function parseFirestoreDate(value: FirestoreTimestamp): Date | null {
     return new Date(value._seconds * 1000);
   }
 
-  if ('seconds' in value && typeof value.seconds === 'number') {
-    return new Date(value.seconds * 1000);
-  }
-
   return null;
 }
 
 export function safeFormatDistance(
   value: FirestoreTimestamp,
-  formatFn: (date: Date) => string,
+  formatDate: (date: Date) => string,
   fallback = ''
 ): string {
   const date = parseFirestoreDate(value);
   if (!date) return fallback;
   try {
-    return formatFn(date);
+    return formatDate(date);
   } catch {
     return fallback;
   }

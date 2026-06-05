@@ -17,23 +17,19 @@ export function useDetection() {
     setDetectionResult(null);
     setRecommendation(null);
 
-    // Preview lokal
     const objectUrl = URL.createObjectURL(file);
     setPreviewUrl(objectUrl);
 
     try {
-      // 1. Upload ke Cloudinary
       setIsUploading(true);
       const { image_URL, cloudinary_public_id } = await uploadToCloudinary(file);
       setIsUploading(false);
 
-      // 2. Kirim ke API deteksi
       setIsDetecting(true);
       const result = await createDetection(image_URL, cloudinary_public_id);
       setDetectionResult(result);
       setIsDetecting(false);
 
-      // 3. Minta rekomendasi AI
       setIsLoadingRecommendation(true);
       const rec = await getAIRecommendation([
         { label: result.label, confidence: result.confidence },

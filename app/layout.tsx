@@ -20,7 +20,7 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: 'SkinSense — Deteksi Penyakit Kulit Berbasis AI',
   description:
-    'Platform deteksi penyakit kulit menggunakan kecerdasan buatan, lengkap dengan rekomendasi penanganan dan forum komunitas.',
+    'Platform deteksi penyakit kulit menggunakan AI, lengkap dengan rekomendasi penanganan dan forum komunitas.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { Mail, Shield } from 'lucide-react';
 
@@ -14,7 +13,6 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pb-8 border-b border-green-800">
 
-          {/* Brand */}
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               {/* <Image src="/green-skin-sense.png" alt="SkinSense" width={48} height={48} className="rounded" /> */}
@@ -26,7 +24,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Links */}
+          {/* list link footer */}
           <div>
             <h4 className="font-zain font-bold text-white mb-3">Navigasi</h4>
             <ul className="space-y-2 text-sm">
@@ -40,7 +38,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Info */}
           <div>
             <h4 className="font-zain font-bold text-white mb-3">Informasi</h4>
             <ul className="space-y-2 text-sm text-green-300">

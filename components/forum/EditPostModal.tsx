@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, KeyboardEvent } from 'react';
+import { useState, SubmitEvent, KeyboardEvent } from 'react';
 import { X, Tag, Loader2, ImagePlus, CheckCircle2, AlertCircle } from 'lucide-react';
 import { updatePost } from '@/lib/api';
 import { uploadToCloudinary } from '@/lib/cloudinary';
@@ -22,8 +22,8 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
     const [error, setError] = useState<string | null>(null);
     const [tagFeedback, setTagFeedback] = useState<string | null>(null);
 
-    const showTagFeedback = (msg: string) => {
-        setTagFeedback(msg);
+    const showTagFeedback = (message: string) => {
+        setTagFeedback(message);
         setTimeout(() => setTagFeedback(null), 2000);
     };
 
@@ -31,7 +31,7 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
         const trimmed = value.trim();
         if (!trimmed) return;
         if (tags.length >= 5) { showTagFeedback('Maksimal 5 tag'); return; }
-        if (tags.map((t) => t.toLowerCase()).includes(trimmed.toLowerCase())) {
+        if (tags.map((tag) => tag.toLowerCase()).includes(trimmed.toLowerCase())) {
             showTagFeedback(`"${trimmed}" sudah ada`);
             setTagInput('');
             return;
@@ -41,7 +41,7 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
         showTagFeedback(`tag "${trimmed}" ditambahkan`);
     };
 
-    const removeTag = (tag: string) => setTags((prev) => prev.filter((t) => t !== tag));
+    const removeTag = (tag: string) => setTags((prev) => prev.filter((prevTag) => prevTag !== tag));
 
     const handleTagKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(); }
@@ -50,7 +50,7 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
         }
     };
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
         setError(null);
 
@@ -59,13 +59,12 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
             : tags;
 
         if (finalTags.length === 0) {
-            setError('Tambahkan minimal 1 tag.');
+            setError('Minimal ada 1 tag di postingan.');
             return;
         }
 
         setLoading(true);
         try {
-            // Gunakan gambar baru jika ada, atau pertahankan yang lama
             let image_URL = post.image_URL ?? undefined;
             let cloudinary_public_id = undefined as string | undefined;
 
@@ -84,9 +83,9 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
             });
             onSuccess();
         } catch (err: unknown) {
-            const axiosMsg = (err as { response?: { data?: { message?: string } } })
+            const aixosErrorMessage = (err as { response?: { data?: { message?: string } } })
                 ?.response?.data?.message;
-            setError(axiosMsg ?? (err instanceof Error ? err.message : 'Gagal memperbarui postingan'));
+            setError(aixosErrorMessage ?? (err instanceof Error ? err.message : 'Gagal memperbarui postingan'));
         } finally {
             setLoading(false);
         }
@@ -97,7 +96,7 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
             <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
                 <div className="flex items-center justify-between p-5 border-b border-stone-100 sticky top-0 bg-white z-10">
                     <h2 className="font-zain text-2xl font-extrabold text-stone-800">Edit Postingan</h2>
-                    <button onClick={onClose} className="p-1 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors">
+                    <button onClick={onClose} className="p-1 cursor-pointer rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
@@ -110,7 +109,7 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
                         </div>
                     )}
 
-                    {/* Judul */}
+                    {/* Judul postingan*/}
                     <div>
                         <label className="block text-sm font-semibold text-stone-600 mb-1">Judul <span className="text-red-400">*</span></label>
                         <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
@@ -127,7 +126,7 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
                             className="w-full px-4 py-2.5 rounded-xl border border-stone-200 focus:outline-none focus:border-green-400 focus:ring-2 focus:ring-green-100 text-sm resize-none" />
                     </div>
 
-                    {/* Tags */}
+                    {/* tags */}
                     <div>
                         <label className="block text-sm font-semibold text-stone-600 mb-1">
                             Tag <span className="text-red-400">*</span>
@@ -138,13 +137,14 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
                                 {tags.map((tag) => (
                                     <span key={tag} className="flex items-center gap-1 text-xs px-2.5 py-1 bg-green-50 text-green-700 rounded-full font-semibold border border-green-100">
                                         {tag}
-                                        <button type="button" onClick={() => removeTag(tag)} className="ml-0.5 hover:text-red-500 transition-colors">
+                                        <button type="button" onClick={() => removeTag(tag)} className="ml-0.5 cursor-pointer hover:text-red-500 transition-colors">
                                             <X className="w-3 h-3" />
                                         </button>
                                     </span>
                                 ))}
                             </div>
                         )}
+                        {/* input tag */}
                         <div className="flex gap-2">
                             <input type="text" value={tagInput} onChange={(e) => setTagInput(e.target.value)}
                                 onKeyDown={handleTagKeyDown} disabled={tags.length >= 5}
@@ -164,7 +164,7 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
                         )}
                     </div>
 
-                    {/* Gambar */}
+                    {/* Upload gambar */}
                     <div>
                         <label className="block text-sm font-semibold text-stone-600 mb-1">
                             Gambar <span className="font-normal text-stone-400">(opsional — kosongkan untuk pertahankan gambar lama)</span>
@@ -176,13 +176,14 @@ export default function EditPostModal({ post, onClose, onSuccess }: Props) {
                         </label>
                     </div>
 
+                    {/* form submit & batal button */}
                     <div className="flex gap-3 pt-2">
                         <button type="button" onClick={onClose}
-                            className="flex-1 px-4 py-2.5 rounded-xl border border-stone-200 text-stone-600 font-semibold hover:bg-stone-50 transition-colors text-sm">
+                            className="flex-1 px-4 py-2.5 rounded-xl cursor-pointer border border-stone-200 text-stone-600 font-semibold hover:bg-stone-50 transition-colors text-sm">
                             Batal
                         </button>
                         <button type="submit" disabled={loading}
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold transition-colors text-sm flex items-center justify-center gap-2 disabled:opacity-60">
+                            className="flex-1 cursor-pointer px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold transition-colors text-sm flex items-center justify-center gap-2 disabled:opacity-60">
                             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                             {loading ? 'Menyimpan...' : 'Simpan Perubahan'}
                         </button>

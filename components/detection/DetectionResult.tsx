@@ -38,7 +38,7 @@ export default function DetectionResult({ result }: Props) {
         </div>
       </div>
 
-      {/* Progress bar */}
+      {/* tampilan confidence */}
       <div className="space-y-1">
         <div className="flex justify-between text-xs text-stone-400">
           <span>Tingkat Kepercayaan</span>
@@ -52,7 +52,6 @@ export default function DetectionResult({ result }: Props) {
         </div>
       </div>
 
-      {/* Top 3 jika tersedia */}
       {result.top_3_result && (
         <div className="space-y-2 pt-1">
           <p className="text-xs font-semibold text-stone-400 uppercase tracking-wide">

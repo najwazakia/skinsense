@@ -18,7 +18,6 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // FIX-MISSING-3: Feedback visual saat tag berhasil ditambahkan
   const [tagFeedback, setTagFeedback] = useState<string | null>(null);
 
   const showTagFeedback = (msg: string) => {
@@ -43,14 +42,13 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
     showTagFeedback(`"${trimmed}" ditambahkan ✓`);
   };
 
-  const removeTag = (tag: string) => setTags((prev) => prev.filter((t) => t !== tag));
+  const removeTag = (tag: string) => setTags((prev) => prev.filter((prevTag) => prevTag !== tag));
 
   const handleTagKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' || e.key === ',') {
       e.preventDefault();
       addTag();
     }
-    // Hapus tag terakhir dengan Backspace jika input kosong
     if (e.key === 'Backspace' && !tagInput && tags.length > 0) {
       setTags((prev) => prev.slice(0, -1));
     }
@@ -60,13 +58,12 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
     e.preventDefault();
     setError(null);
 
-    // FIX-MISSING-3: Auto-tambah tag yang masih di input sebelum submit
     const finalTags = tagInput.trim()
       ? [...new Set([...tags, tagInput.trim()])]
       : tags;
 
     if (finalTags.length === 0) {
-      setError('Tambahkan minimal 1 tag sebelum memposting.');
+      setError('Minimal ada 1 tag di postingan.');
       return;
     }
 
@@ -90,9 +87,9 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
       });
       onSuccess();
     } catch (err: unknown) {
-      const axiosMsg = (err as { response?: { data?: { message?: string } } })
+      const axiosErrorMessage = (err as { response?: { data?: { message?: string } } })
         ?.response?.data?.message;
-      setError(axiosMsg ?? (err instanceof Error ? err.message : 'Gagal membuat postingan'));
+      setError(axiosErrorMessage ?? (err instanceof Error ? err.message : 'Gagal membuat postingan'));
     } finally {
       setLoading(false);
     }
@@ -101,19 +98,18 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        {/* Header */}
+
         <div className="flex items-center justify-between p-5 border-b border-stone-100 sticky top-0 bg-white z-10">
           <h2 className="font-zain text-2xl font-extrabold text-stone-800">Buat Postingan</h2>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
+            className="p-1 rounded-lg cursor-pointer text-stone-400 hover:text-stone-600 hover:bg-stone-50 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          {/* Error */}
           {error && (
             <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-100 text-red-700 text-sm rounded-xl">
               <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -139,7 +135,7 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
             <p className="text-xs text-stone-400 mt-1 text-right">{title.length}/100</p>
           </div>
 
-          {/* Konten */}
+          {/* konten */}
           <div>
             <label className="block text-sm font-semibold text-stone-600 mb-1">
               Konten <span className="text-red-400">*</span>
@@ -155,7 +151,7 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
             />
           </div>
 
-          {/* Tags */}
+          {/* Tags postingan */}
           <div>
             <label className="block text-sm font-semibold text-stone-600 mb-1">
               Tag{' '}
@@ -163,7 +159,6 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
               <span className="font-normal text-stone-400 ml-1">(maks. 5)</span>
             </label>
 
-            {/* Tag pills */}
             {tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mb-2">
                 {tags.map((tag) => (
@@ -175,7 +170,7 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
                     <button
                       type="button"
                       onClick={() => removeTag(tag)}
-                      className="ml-0.5 hover:text-red-500 transition-colors"
+                      className="ml-0.5 cursor-pointer hover:text-red-500 transition-colors"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -184,7 +179,7 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
               </div>
             )}
 
-            {/* Input + tombol */}
+            {/* input tag */}
             <div className="flex gap-2">
               <input
                 type="text"
@@ -205,7 +200,6 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
               </button>
             </div>
 
-            {/* Feedback */}
             {tagFeedback && (
               <p className={`flex items-center gap-1 text-xs mt-1.5 transition-all ${tagFeedback.includes('✓')
                 ? 'text-green-600'
@@ -221,11 +215,11 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
             <p className="text-xs text-stone-400 mt-1">
               Tekan <kbd className="px-1 py-0.5 bg-stone-100 rounded text-stone-500 font-mono">Enter</kbd> atau{' '}
               <kbd className="px-1 py-0.5 bg-stone-100 rounded text-stone-500 font-mono">,</kbd> untuk menambahkan tag.
-              Backspace untuk menghapus tag terakhir.
+              Tekan <kbd className="px-1 py-0.5 bg-stone-100 rounded text-stone-500 font-mono">Backspace</kbd> untuk menghapus tag yang terakhir.
             </p>
           </div>
 
-          {/* Gambar */}
+          {/* Upload Gambar */}
           <div>
             <label className="block text-sm font-semibold text-stone-600 mb-1">
               Gambar <span className="font-normal text-stone-400">(opsional)</span>
@@ -242,19 +236,19 @@ export default function CreatePostModal({ onClose, onSuccess }: Props) {
             </label>
           </div>
 
-          {/* Actions */}
+          {/* form submit & batal button */}
           <div className="flex gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 rounded-xl border border-stone-200 text-stone-600 font-semibold hover:bg-stone-50 transition-colors text-sm"
+              className="flex-1 cursor-pointer px-4 py-2.5 rounded-xl border border-stone-200 text-stone-600 font-semibold hover:bg-stone-50 transition-colors text-sm"
             >
               Batal
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold transition-colors text-sm flex items-center justify-center gap-2 disabled:opacity-60"
+              className="flex-1 cursor-pointer px-4 py-2.5 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold transition-colors text-sm flex items-center justify-center gap-2 disabled:opacity-60"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin" />}
               {loading ? 'Memposting...' : 'Post'}
