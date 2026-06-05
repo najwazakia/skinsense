@@ -20,7 +20,7 @@ export default function Header() {
     ? [{ href: '/history', label: 'Riwayat', Icon: History }]
     : [];
 
-  const navLinks = [baseLinks[0], ...authLinks, baseLinks[1]];
+  const navLinks = [baseLinks[0], baseLinks[1], ...authLinks, baseLinks[2]];
 
   return (
     <header className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-green-100 shadow-sm">
