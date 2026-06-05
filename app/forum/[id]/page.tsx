@@ -119,7 +119,7 @@ export default function PostDetailPage() {
           </div>
         )}
 
-        <h1 className="font-zain text-3xl font-extrabold text-stone-800">{post.title}</h1>
+        <h1 className="font-zain text-3xl font-extrabold text-stone-800 wrap-break-word" >{post.title}</h1>
 
         {/* Author + Edit/Delete */}
         {post.author && (
@@ -202,7 +202,7 @@ export default function PostDetailPage() {
         )}
 
         {/* Content */}
-        <p className="text-stone-700 leading-relaxed whitespace-pre-wrap">{post.content}</p>
+        <p className="text-stone-700 leading-relaxed whitespace-pre-wrap wrap-break-word">{post.content}</p>
 
         {/* Votes */}
         <div className="flex items-center gap-3 pt-2 border-t border-stone-50">

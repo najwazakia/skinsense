@@ -5,47 +5,53 @@ import type {
   Post, Comment, User,
 } from '@/types';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:5000';
-
-const api = axios.create({ baseURL: BASE_URL });
-
-// ─── Token helpers ────────────────────────────────────────────
 /**
- * Ambil token Firebase milik user saat ini (Google atau Anonymous).
- * Firebase Anonymous Auth menghasilkan ID token nyata yang bisa
- * diverifikasi oleh verifyIdToken() di server, sehingga tidak perlu
- * lagi membuat string "guest_…" secara manual di localStorage.
+ * baseURL = '/api'  →  request dikirim ke /api/* (same-origin)
+ * Next.js rewrite di next.config.ts mem-proxy ke http://localhost:5000/*
+ * sehingga tidak ada CORS issue dari browser.
+ *
+ * Anda TIDAK perlu mengubah NEXT_PUBLIC_API_BASE_URL di .env untuk
+ * kebutuhan ini. Env var tersebut hanya dibaca oleh next.config.ts
+ * sebagai tujuan rewrite.
  */
+const api = axios.create({ baseURL: '/api' });
+
+// ─── Token helpers ──────────────────────────────────────────────────────────
+
+/** Token Firebase milik user saat ini (Google atau Anonymous). */
 async function getToken(): Promise<string | null> {
   const user = auth.currentUser;
   if (!user) return null;
-  return await user.getIdToken();
+  return user.getIdToken();
 }
 
-async function authHeaders() {
+/** Header untuk endpoint optionalAuth — menerima token Google maupun Anonymous. */
+async function authHeaders(): Promise<Record<string, string>> {
   const token = await getToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 /**
- * Hanya untuk endpoint yang butuh Google user (requireAuth).
- * Lempar error jika user belum login atau masih anonymous.
+ * Header untuk endpoint requireAuth — hanya menerima token Google.
+ * Lempar error lokal jika user belum login atau masih anonymous.
  */
-async function requireAuthHeaders() {
+async function requireAuthHeaders(): Promise<Record<string, string>> {
   const user = auth.currentUser;
   if (!user || user.isAnonymous) throw new Error('Login diperlukan');
   const token = await user.getIdToken();
   return { Authorization: `Bearer ${token}` };
 }
 
-// ─── Auth ─────────────────────────────────────────────────────
+// ─── Auth ───────────────────────────────────────────────────────────────────
+
 export async function loginWithGoogle(): Promise<User> {
   const headers = await requireAuthHeaders();
   const res = await api.post<ApiResponse<User>>('/auth/google', {}, { headers });
   return res.data.data;
 }
 
-// ─── Detection ────────────────────────────────────────────────
+// ─── Detection ──────────────────────────────────────────────────────────────
+
 export async function createDetection(
   image_URL: string,
   cloudinary_public_id: string,
@@ -77,7 +83,8 @@ export async function getAIRecommendation(
   return res.data.data;
 }
 
-// ─── Forum Posts ──────────────────────────────────────────────
+// ─── Forum — Posts ──────────────────────────────────────────────────────────
+
 export async function getAllPosts(params?: { title?: string }): Promise<Post[]> {
   const headers = await authHeaders();
   const endpoint = params?.title ? '/forum/posts/search' : '/forum/posts';
@@ -132,7 +139,8 @@ export async function votePost(postId: string, type: 'upvote' | 'downvote'): Pro
   await api.post(`/forum/posts/${postId}/vote`, { type }, { headers });
 }
 
-// ─── Forum Comments ───────────────────────────────────────────
+// ─── Forum — Comments ────────────────────────────────────────────────────────
+
 export async function getComments(postId: string): Promise<Comment[]> {
   const headers = await requireAuthHeaders();
   const res = await api.get<ApiResponse<Comment[]>>(

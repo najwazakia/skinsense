@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Scan, Clock, ChevronRight, AlertCircle, Lock, TrendingUp } from 'lucide-react';
+import { Scan, Clock, ChevronRight, AlertCircle, Lock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { id as localeId } from 'date-fns/locale';
 import { getDetectionHistory } from '@/lib/api';
